@@ -17,7 +17,8 @@ void Game::run()
 	mWindow.setVerticalSyncEnabled(true);
 
 	Map map;
-	map.initialize(4);
+	Solver solver;
+	//map.initialize(4);
 
 	// Main loop
 	while (mWindow.isOpen() && !sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -33,6 +34,9 @@ void Game::run()
 				break;
 			case sf::Event::KeyPressed:
 
+				if (event.key.code > 26 && event.key.code < 36)
+					map.initialize(event.key.code - 26);
+
 				if (event.key.code == sf::Keyboard::R)
 					map.restart();
 				if (event.key.code == sf::Keyboard::T)
@@ -47,7 +51,13 @@ void Game::run()
 				if (event.key.code == sf::Keyboard::D)
 					map.move(Map::right);
 				
+				if (event.key.code == sf::Keyboard::Space)
+					solver.h(map.getStartState());
+
 				map.printMap();
+			case sf::Event::MouseButtonPressed:
+
+				break;
 			}
 
 		}

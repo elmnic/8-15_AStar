@@ -13,20 +13,20 @@ Map::~Map()
 void Map::initialize(int fieldSize)
 {
 	mPlayingField.clear();
-	switch (fieldSize)
+
+	mPlayingField.resize(fieldSize, std::vector<int>(fieldSize, 0));
+
+	int blankTile = fieldSize * fieldSize;
+	int fieldValue = 0;
+
+	for (int i = 0; i < fieldSize; i++)
 	{
-	case 3:
-		mPlayingField = mField3x3;
-		break;
-	case 4:
-		mPlayingField = mField4x4;
-		break;
-	default:
-		break;
+		for (int j = 0; j < fieldSize; j++)
+		{
+			if (blankTile != (i + 1) * (j + 1))
+				mPlayingField[i][j] = ++fieldValue;
+		}
 	}
-
-	printMap();
-
 }
 
 void Map::restart()
@@ -34,7 +34,12 @@ void Map::restart()
 	initialize(mPlayingField.size());
 }
 
-int Map::correctPerc()
+Map::State Map::getStartState()
+{
+	return mPlayingField;
+}
+
+int Map::correctPercentage()
 {
 	int correctTiles = 0;
 
@@ -90,7 +95,6 @@ void Map::shuffleMap()
 
 		int seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 		srand(seed);
-		std::cout << "Seed: " << seed << std::endl;
 		switch (seed % 4)
 		{
 		case 0:
@@ -147,7 +151,7 @@ void Map::move(direction dir)
 
 
 	if (!mShuffling)
-		correctPerc();
+		correctPercentage();
 
 }
 
