@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Node.h"
+#include "StateStruct.h"
+#include <algorithm>
+#include <set>
 
 struct CompareCost
 {
@@ -13,14 +16,22 @@ struct CompareCost
 class Solver
 {
 public:
+
 	Solver();
 	~Solver();
 
-	void h(Node::State state);
-
-	std::vector<Node::State> solve(Node::State start, Node::State goal);
+	std::vector<Node*> solve(StateStruct::State start, StateStruct::State goal);
 
 private:
+	bool isGoal(StateStruct:: State state, StateStruct::State goal);
+
+	// Queue not yet expanded child nodes
 	std::priority_queue<Node*, std::vector<Node*>, CompareCost> openList;
+	std::vector<Node*> closedList;
+
+	std::set<Node*> openSet;
+
+	// Contains the solution
+	std::vector<Node*> cameFrom;
 };
 

@@ -6,11 +6,12 @@
 #include <iostream>
 #include <time.h>
 #include <chrono>
+#include "StateStruct.h"
 
 class Map
 {
 public:
-	typedef std::vector<std::vector<int>> State;
+
 	enum direction { up, down, left, right};
 	Map();
 	~Map();
@@ -18,11 +19,14 @@ public:
 	void initialize(int fieldSize);
 	void printMap();
 	void shuffleMap();
-	void move(direction dir);
+	StateStruct::State move(direction dir);
 	void locateSpace(int & iRow, int & iCol);
 	void restart();
 
-	State getStartState();
+	StateStruct::State getGoalState();
+	StateStruct::State getCurrentState();
+
+	void updateCurrentState(StateStruct::State newState);
 
 
 private:
@@ -31,16 +35,17 @@ private:
 	bool mShuffling = false;
 
 	// Default arrays
-	State mField3x3 = {{{ 1, 2, 3 },
+	StateStruct::State mField3x3 = {{{ 1, 2, 3 },
 						{ 4, 5, 6 },
 						{ 7, 8, 0 }}};
 
-	State mField4x4 = {{{ 1,  2,  3,  4  },
+	StateStruct::State mField4x4 = {{{ 1,  2,  3,  4  },
 						{ 5,  6,  7,  8  },
 						{ 9,  10, 11, 12 },
 						{ 13, 14, 15, 0  }}};
 
-	State mPlayingField;
+	StateStruct::State mCurrentState;
+	StateStruct::State mStartState;
 
 };
 

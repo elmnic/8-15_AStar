@@ -44,5 +44,8 @@
     <ClInclude Include="Solver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StateStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -12,57 +12,75 @@ Map::~Map()
 
 void Map::initialize(int fieldSize)
 {
-	mPlayingField.clear();
+	mStartState.clear();
 
-	mPlayingField.resize(fieldSize, std::vector<int>(fieldSize, 0));
+	mStartState.resize(fieldSize, std::vector<int>(fieldSize, 0));
 
 	int blankTile = fieldSize * fieldSize;
 	int fieldValue = 0;
+
+	/* Fill the matrix with 1, 2, 3, ... depending on fieldSize
+							3, 4, 5, ...
+							6, 7, 0, ...
+	*/
 
 	for (int i = 0; i < fieldSize; i++)
 	{
 		for (int j = 0; j < fieldSize; j++)
 		{
 			if (blankTile != (i + 1) * (j + 1))
-				mPlayingField[i][j] = ++fieldValue;
+				mStartState[i][j] = ++fieldValue;
 		}
 	}
+	mCurrentState = mStartState;
 }
 
 void Map::restart()
 {
-	initialize(mPlayingField.size());
+	initialize(mCurrentState.size());
 }
 
-Map::State Map::getStartState()
+StateStruct::State Map::getGoalState()
 {
-	return mPlayingField;
+	return mStartState;
 }
 
+StateStruct::State Map::getCurrentState()
+{
+	return mCurrentState;
+}
+
+void Map::updateCurrentState(StateStruct::State newState)
+{
+	if (newState != StateStruct::State(NULL))
+		mCurrentState = newState;
+}
+
+// Usch
 int Map::correctPercentage()
 {
 	int correctTiles = 0;
 
-	if (mPlayingField.size() == 3)
+	if (mCurrentState.size() == 3)
 	{
-		for (int row = 0; row < mPlayingField.size(); row++)
+		for (int row = 0; row < mCurrentState.size(); row++)
 		{
-			for (int col = 0; col < mPlayingField[0].size(); col++)
+			for (int col = 0; col < mCurrentState[0].size(); col++)
 			{
-				if (mPlayingField[row][col] == mField3x3[row][col])
+				if (mCurrentState[row][col] == mField3x3[row][col])
 				{
 					correctTiles++;
 				}
 			}
 		}
 	}
-	else if (mPlayingField.size() == 4)
+	else if (mCurrentState.size() == 4)
 	{
-		for (int row = 0; row < mPlayingField.size(); row++)
+		for (int row = 0; row < mCurrentState.size(); row++)
 		{
-			for (int col = 0; col < mPlayingField[0].size(); col++)
+			for (int col = 0; col < mCurrentState[0].size(); col++)
 			{
-				if (mPlayingField[row][col] == mField4x4[row][col])
+				if (mCurrentState[row][col] == mField4x4[row][col])
 				{
 					correctTiles++;
 				}
@@ -70,18 +88,18 @@ int Map::correctPercentage()
 		}
 	}
 
-	int percentage = (double)correctTiles / (double)(mPlayingField.size() * mPlayingField.size()) * 100;
+	int percentage = (double)correctTiles / (double)(mCurrentState.size() * mCurrentState.size()) * 100;
 	std::cout << percentage << "% correct" << std::endl;
 	return percentage;
 }
 
 void Map::printMap()
 {
-	for (int row = 0; row < mPlayingField.size(); row++)
+	for (int row = 0; row < mCurrentState.size(); row++)
 	{
-		for (int col = 0; col < mPlayingField[0].size(); col++)
+		for (int col = 0; col < mCurrentState[0].size(); col++)
 		{
-			std::cout << mPlayingField[row][col] << " ";
+			std::cout << mCurrentState[row][col] << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -90,39 +108,42 @@ void Map::printMap()
 void Map::shuffleMap()
 {
 	mShuffling = true;
+	int seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() / 100;
+	srand(seed);
+	StateStruct::State state;
 	for (int i = 0; i < 50; i++)
 	{
-
-		int seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
-		srand(seed);
-		switch (seed % 4)
+		int randomVal = rand();
+		switch (randomVal % 4)
 		{
 		case 0:
-			move(Map::up);
+			updateCurrentState(move(Map::up));
 			break;
 		case 1:
-			move(Map::down);
+			updateCurrentState(move(Map::down));
 			break;
 		case 2:
-			move(Map::left);
+			updateCurrentState(move(Map::left));
 			break;
 		case 3:
-			move(Map::right);
+			updateCurrentState(move(Map::right));
 			break;
 		default:
 			break;
 		}
 	}
+
 	mShuffling = false;
 }
 
-void Map::move(direction dir)
+StateStruct::State Map::move(direction dir)
 {
 	int spaceRow, spaceCol;
 	locateSpace(spaceRow, spaceCol);
 	int tileRow = spaceRow;
 	int tileCol = spaceCol;
-	// Determine which tile is to be moved 
+
+	// Determine which tile is to be moved
 	switch (dir)
 	{
 	case Map::up:
@@ -141,28 +162,35 @@ void Map::move(direction dir)
 		break;
 	}
 
-	if (tileCol >= 0 && tileCol < mPlayingField.size() &&
-		tileRow >= 0 && tileRow < mPlayingField[0].size())
+	// If tile is on the map
+	if (tileCol >= 0 && tileCol < mCurrentState.size() &&
+		tileRow >= 0 && tileRow < mCurrentState.size())
 	{
-		// Moves the tile into the empty block
-		mPlayingField[spaceRow][spaceCol] = mPlayingField[tileRow][tileCol];
-		mPlayingField[tileRow][tileCol] = 0;
+		StateStruct::State returnState;
+		returnState = mCurrentState;
+
+		// Move the tile into the empty block
+		returnState[spaceRow][spaceCol] = returnState[tileRow][tileCol];
+		returnState[tileRow][tileCol] = 0;
+		return returnState;
 	}
 
+	return StateStruct::State(NULL);
 
-	if (!mShuffling)
-		correctPercentage();
+
+	//if (!mShuffling)
+	//	correctPercentage();
 
 }
 
 void Map::locateSpace(int & iRow, int & iCol)
 {
 
-	for (int row = 0; row < mPlayingField.size(); row++)
+	for (int row = 0; row < mCurrentState.size(); row++)
 	{
-		for (int col = 0; col < mPlayingField[0].size(); col++)
+		for (int col = 0; col < mCurrentState[0].size(); col++)
 		{
-			if (mPlayingField[row][col] == 0)
+			if (mCurrentState[row][col] == 0)
 			{
 				iRow = row;
 				iCol = col;

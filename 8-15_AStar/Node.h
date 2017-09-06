@@ -3,21 +3,28 @@
 #include <queue>
 #include <stdlib.h>
 #include <iostream>
+#include "StateStruct.h"
 
 class Node
 {
 public:
-	typedef std::vector<std::vector<int>> State;
 	
-	Node(State state);
+	Node(StateStruct::State state, Node* parent, int cost);
 	~Node();
 
-	int heuristic(int currentCost);
-	int cost;
+	void expandChildren();
+	int heuristic();
+	int cost();
+
+
+	StateStruct::State getState() { return mState; };
+	std::vector<Node*> getChildren() { return mChildren; };
 
 private:
-	State mState;
-
+	int mCost;
+	StateStruct::State mState;
+	Node* mParent;
+	std::vector<Node*> mChildren;
 
 };
 

@@ -16,7 +16,6 @@ public:
 	// Starting point
 	void run();
 
-
 private:
 	
 	

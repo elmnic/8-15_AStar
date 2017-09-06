@@ -13,12 +13,14 @@ Game::~Game()
 
 void Game::run()
 {
-	mWindow.create(sf::VideoMode(900, 900), "8/15", sf::Style::Close);
+	mWindow.create(sf::VideoMode(400, 400), "8/15", sf::Style::Close);
 	mWindow.setVerticalSyncEnabled(true);
 
 	Map map;
 	Solver solver;
 	//map.initialize(4);
+
+	StateStruct::State state;
 
 	// Main loop
 	while (mWindow.isOpen() && !sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -43,16 +45,18 @@ void Game::run()
 					map.shuffleMap();
 
 				if (event.key.code == sf::Keyboard::W)
-					map.move(Map::up);
+					map.updateCurrentState(map.move(Map::up));
 				if (event.key.code == sf::Keyboard::S)
-					map.move(Map::down);
+					map.updateCurrentState(map.move(Map::down));
 				if (event.key.code == sf::Keyboard::A)
-					map.move(Map::left);
+					map.updateCurrentState(map.move(Map::left));
 				if (event.key.code == sf::Keyboard::D)
-					map.move(Map::right);
+					map.updateCurrentState(map.move(Map::right));
 				
 				if (event.key.code == sf::Keyboard::Space)
-					solver.h(map.getStartState());
+					solver.solve(map.getCurrentState(), map.getGoalState());
+
+				
 
 				map.printMap();
 			case sf::Event::MouseButtonPressed:
