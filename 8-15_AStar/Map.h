@@ -17,10 +17,10 @@ public:
 	~Map();
 
 	void initialize(int fieldSize);
-	void printMap();
+	static void printMap(StateStruct::State map);
 	void shuffleMap();
-	StateStruct::State move(direction dir);
-	void locateSpace(int & iRow, int & iCol);
+	StateStruct::State move(direction dir, StateStruct::State currentState);
+	void locateSpace(int & iRow, int & iCol, StateStruct::State state);
 	void restart();
 
 	StateStruct::State getGoalState();

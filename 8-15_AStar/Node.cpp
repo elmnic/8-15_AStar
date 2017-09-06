@@ -5,7 +5,7 @@
 Node::Node(StateStruct::State state, Node* parent, int cost) :
 	mState(state),
 	mParent(parent),
-	mCost(cost)
+	pathCost(cost)
 {
 }
 
@@ -14,8 +14,28 @@ Node::~Node()
 {
 }
 
-int Node::cost() {
-	return mCost;
+void Node::expandChildren()
+{
+	Map map;
+	// Iterate through the four possible directions
+	for (int i = 0; i < 4; i++)
+	{
+		// If the move is valid, add it to the child nodes
+
+		// IS MOVE VALID=?=???
+		std::cout << "Move to be made: " << static_cast<Map::direction>(i) << std::endl;
+		StateStruct::State newState = map.move(static_cast<Map::direction>(i), mState);
+		
+		std::cout << "New State: \n";
+		Map::printMap(newState);
+
+		if (!StateStruct::compare(newState, mState))
+		{
+			std::cout << "Added child to neighbours" << std::endl;
+			mChildren.push_back(new Node(newState, this, pathCost));
+		}
+	}
+
 }
 
 int Node::heuristic()
@@ -44,9 +64,7 @@ int Node::heuristic()
 					actualPosY = j;
 					int manhDis = std::abs(targetPosX - actualPosX) + std::abs(targetPosY - actualPosY);
 					totalCost += manhDis;
-					//std::cout << "TargetX: " << targetPosX << " actualX: " << actualPosX << std::endl;
-					//std::cout << "TargetY: " << targetPosY << " actualY: " << actualPosY << std::endl;
-					std::cout << "Calculated cost for value " << targetValue << ": " << manhDis << std::endl << std::endl;
+					//std::cout << "Calculated cost for value " << targetValue << ": " << manhDis << std::endl << std::endl;
 					targetValue++;
 					foundTarget = true;
 					break;
@@ -60,4 +78,5 @@ int Node::heuristic()
 
 	return totalCost;
 }
+
 

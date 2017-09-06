@@ -45,20 +45,30 @@ void Game::run()
 					map.shuffleMap();
 
 				if (event.key.code == sf::Keyboard::W)
-					map.updateCurrentState(map.move(Map::up));
+					map.updateCurrentState(map.move(Map::up, map.getCurrentState()));
 				if (event.key.code == sf::Keyboard::S)
-					map.updateCurrentState(map.move(Map::down));
+					map.updateCurrentState(map.move(Map::down, map.getCurrentState()));
 				if (event.key.code == sf::Keyboard::A)
-					map.updateCurrentState(map.move(Map::left));
+					map.updateCurrentState(map.move(Map::left, map.getCurrentState()));
 				if (event.key.code == sf::Keyboard::D)
-					map.updateCurrentState(map.move(Map::right));
+					map.updateCurrentState(map.move(Map::right, map.getCurrentState()));
 				
 				if (event.key.code == sf::Keyboard::Space)
-					solver.solve(map.getCurrentState(), map.getGoalState());
-
+				{
+					std::vector<Node*> cameFrom;
+					cameFrom = solver.solve(map.getCurrentState(), map.getGoalState());
+					std::cout << "CameFrom: " << cameFrom.size() << std::endl;
+					for each (Node* node in cameFrom)
+					{
+						map.printMap(node->getState());
+					}
+				}
+				else
+				{
+					map.printMap(map.getCurrentState());
+				}
 				
 
-				map.printMap();
 			case sf::Event::MouseButtonPressed:
 
 				break;

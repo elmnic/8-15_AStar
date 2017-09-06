@@ -93,13 +93,13 @@ int Map::correctPercentage()
 	return percentage;
 }
 
-void Map::printMap()
+void Map::printMap(StateStruct::State map)
 {
-	for (int row = 0; row < mCurrentState.size(); row++)
+	for (int row = 0; row < map.size(); row++)
 	{
-		for (int col = 0; col < mCurrentState[0].size(); col++)
+		for (int col = 0; col < map[0].size(); col++)
 		{
-			std::cout << mCurrentState[row][col] << " ";
+			std::cout << map[row][col] << " ";
 		}
 		std::cout << std::endl;
 	}
@@ -117,16 +117,16 @@ void Map::shuffleMap()
 		switch (randomVal % 4)
 		{
 		case 0:
-			updateCurrentState(move(Map::up));
+			updateCurrentState(move(Map::up, mCurrentState));
 			break;
 		case 1:
-			updateCurrentState(move(Map::down));
+			updateCurrentState(move(Map::down, mCurrentState));
 			break;
 		case 2:
-			updateCurrentState(move(Map::left));
+			updateCurrentState(move(Map::left, mCurrentState));
 			break;
 		case 3:
-			updateCurrentState(move(Map::right));
+			updateCurrentState(move(Map::right, mCurrentState));
 			break;
 		default:
 			break;
@@ -136,10 +136,15 @@ void Map::shuffleMap()
 	mShuffling = false;
 }
 
-StateStruct::State Map::move(direction dir)
+StateStruct::State Map::move(direction dir, StateStruct::State currentState)
 {
-	int spaceRow, spaceCol;
-	locateSpace(spaceRow, spaceCol);
+
+	StateStruct::State returnState;
+	returnState = currentState;
+
+	int spaceRow = 0, spaceCol = 0;
+	locateSpace(spaceRow, spaceCol, currentState);
+
 	int tileRow = spaceRow;
 	int tileCol = spaceCol;
 
@@ -163,11 +168,9 @@ StateStruct::State Map::move(direction dir)
 	}
 
 	// If tile is on the map
-	if (tileCol >= 0 && tileCol < mCurrentState.size() &&
-		tileRow >= 0 && tileRow < mCurrentState.size())
+	if (tileCol >= 0 && tileCol < currentState.size() &&
+		tileRow >= 0 && tileRow < currentState.size())
 	{
-		StateStruct::State returnState;
-		returnState = mCurrentState;
 
 		// Move the tile into the empty block
 		returnState[spaceRow][spaceCol] = returnState[tileRow][tileCol];
@@ -175,6 +178,7 @@ StateStruct::State Map::move(direction dir)
 		return returnState;
 	}
 
+	// Else return NULL State
 	return StateStruct::State(NULL);
 
 
@@ -183,14 +187,14 @@ StateStruct::State Map::move(direction dir)
 
 }
 
-void Map::locateSpace(int & iRow, int & iCol)
+void Map::locateSpace(int & iRow, int & iCol, StateStruct::State state)
 {
 
-	for (int row = 0; row < mCurrentState.size(); row++)
+	for (int row = 0; row < state.size(); row++)
 	{
-		for (int col = 0; col < mCurrentState[0].size(); col++)
+		for (int col = 0; col < state[0].size(); col++)
 		{
-			if (mCurrentState[row][col] == 0)
+			if (state[row][col] == 0)
 			{
 				iRow = row;
 				iCol = col;

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "StateStruct.h"
+#include "Map.h"
 
 class Node
 {
@@ -14,9 +15,13 @@ public:
 
 	void expandChildren();
 	int heuristic();
-	int cost();
 
+	
 
+	int pathCost;
+
+	/// heuristicCost is f(n) = g(n) + h(n)
+	int heuristicCost;
 	StateStruct::State getState() { return mState; };
 	std::vector<Node*> getChildren() { return mChildren; };
 

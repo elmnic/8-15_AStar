@@ -5,11 +5,11 @@
 #include <algorithm>
 #include <set>
 
-struct CompareCost
+struct OrderByCost
 {
-	bool operator()(const Node & n1, const Node & n2)
+	bool operator()(Node const *n1, Node const *n2)
 	{
-		return n1.cost < n2.cost;
+		return n1->pathCost < n2->pathCost;
 	}
 };
 
@@ -26,7 +26,7 @@ private:
 	bool isGoal(StateStruct:: State state, StateStruct::State goal);
 
 	// Queue not yet expanded child nodes
-	std::priority_queue<Node*, std::vector<Node*>, CompareCost> openList;
+	std::priority_queue<Node*, std::vector<Node*>, OrderByCost> openList;
 	std::vector<Node*> closedList;
 
 	std::set<Node*> openSet;
