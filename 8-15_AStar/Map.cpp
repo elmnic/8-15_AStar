@@ -111,7 +111,7 @@ void Map::shuffleMap()
 	int seed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count() / 100;
 	srand(seed);
 	StateStruct::State state;
-	for (int i = 0; i < 50; i++)
+	for (int i = 0; i < 1000; i++)
 	{
 		int randomVal = rand();
 		switch (randomVal % 4)

@@ -5,11 +5,12 @@
 #include <algorithm>
 #include <set>
 
-struct OrderByCost
+class OrderByCost
 {
+public:
 	bool operator()(Node const *n1, Node const *n2)
 	{
-		return n1->pathCost < n2->pathCost;
+		return n1->totalCost > n2->totalCost;
 	}
 };
 
@@ -21,6 +22,9 @@ public:
 	~Solver();
 
 	std::vector<Node*> solve(StateStruct::State start, StateStruct::State goal);
+	std::vector<Node*> reconstructPath(Node* finalChild);
+
+	void clear();
 
 private:
 	bool isGoal(StateStruct:: State state, StateStruct::State goal);

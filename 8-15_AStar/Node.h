@@ -16,13 +16,14 @@ public:
 	void expandChildren();
 	int heuristic();
 
-	
-
 	int pathCost;
-
-	/// heuristicCost is f(n) = g(n) + h(n)
 	int heuristicCost;
-	StateStruct::State getState() { return mState; };
+	// totalCost = pathCost + heuristicCost
+	int totalCost;
+
+	void clear();
+
+	const StateStruct::State& getState() { return mState; };
 	std::vector<Node*> getChildren() { return mChildren; };
 
 private:

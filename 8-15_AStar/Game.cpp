@@ -1,14 +1,22 @@
 #include "Game.h"
 
-
+Solver* solver;
 
 Game::Game() :
 	mWindow()
 {
+	solver = new Solver();
 }
 
 Game::~Game()
 {
+	clear();
+}
+
+void Game::clear() 
+{
+	solver->clear();
+	delete solver;
 }
 
 void Game::run()
@@ -17,7 +25,6 @@ void Game::run()
 	mWindow.setVerticalSyncEnabled(true);
 
 	Map map;
-	Solver solver;
 	//map.initialize(4);
 
 	StateStruct::State state;
@@ -56,11 +63,13 @@ void Game::run()
 				if (event.key.code == sf::Keyboard::Space)
 				{
 					std::vector<Node*> cameFrom;
-					cameFrom = solver.solve(map.getCurrentState(), map.getGoalState());
+					solver->clear();
+					cameFrom = solver->solve(map.getCurrentState(), map.getGoalState());
 					std::cout << "CameFrom: " << cameFrom.size() << std::endl;
 					for each (Node* node in cameFrom)
 					{
 						map.printMap(node->getState());
+						std::cout << std::endl;
 					}
 				}
 				else

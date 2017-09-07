@@ -20,7 +20,7 @@ private:
 	
 	
 	void render();
-
+	void clear();
 	
 	sf::RenderWindow mWindow;
 };

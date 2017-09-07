@@ -7,11 +7,14 @@ Node::Node(StateStruct::State state, Node* parent, int cost) :
 	mParent(parent),
 	pathCost(cost)
 {
+	heuristicCost = heuristic();
+	totalCost = pathCost + heuristicCost;
 }
 
 
 Node::~Node()
 {
+	clear();
 }
 
 void Node::expandChildren()
@@ -20,24 +23,36 @@ void Node::expandChildren()
 	// Iterate through the four possible directions
 	for (int i = 0; i < 4; i++)
 	{
-		// If the move is valid, add it to the child nodes
 
-		// IS MOVE VALID=?=???
+		// Create new state by making a move in a direction
 		std::cout << "Move to be made: " << static_cast<Map::direction>(i) << std::endl;
 		StateStruct::State newState = map.move(static_cast<Map::direction>(i), mState);
+
+		// If parent exists and newState is the same as the parent's state, then skip
+		if (mParent != NULL)
+		{
+			if (StateStruct::compare(newState, mParent->getState()))
+			{
+				std::cout << "Nope" << std::endl;
+				continue;
+			}
+		}
 		
 		std::cout << "New State: \n";
 		Map::printMap(newState);
 
-		if (!StateStruct::compare(newState, mState))
+		// If the move is valid, add it to the child nodes
+		if (newState != StateStruct::State(NULL))
 		{
 			std::cout << "Added child to neighbours" << std::endl;
-			mChildren.push_back(new Node(newState, this, pathCost));
+			mChildren.push_back(new Node(newState, this, pathCost + 1));
+			std::cout << "Child cost: " << mChildren.back()->pathCost + mChildren.back()->heuristicCost << std::endl;
 		}
 	}
 
 }
 
+// Calculates the cumulative manhattan distance for all values on the board
 int Node::heuristic()
 {
 	int fieldSize = mState.size() * mState.size();
@@ -77,6 +92,11 @@ int Node::heuristic()
 	}
 
 	return totalCost;
+}
+
+void Node::clear()
+{
+	mChildren.clear();
 }
 
 
