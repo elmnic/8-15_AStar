@@ -15,8 +15,6 @@ Solver::~Solver()
 std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State goal)
 {
 
-	//TODO: Fix priority queue sorting
-
 	// Push start node
 	openList.push(new Node(start, NULL, 0));
 
@@ -27,18 +25,19 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 	cameFrom.clear();
 
 	// Add start node to cameFrom vector
-	cameFrom.push_back(openList.top());
-
+	int iterations = 0;
 	while (!openList.empty()) 
 	{
+		iterations++;
 		Node *current = openList.top();
 		if (current->getState() == goal) 
 		{
-			std::cout << "Found solution" << std::endl;
-			return reconstructPath(current);
+			std::cout << "Found solution after " << iterations << " iterations" << std::endl;
+			current->reconstructPath(cameFrom);
+			return cameFrom;
 		}
 
-		std::cout << "openList top: " << current->totalCost << std::endl;
+		//std::cout << "openList top: " << current->totalCost << std::endl;
 
 		// Create child nodes
 		current->expandChildren();
@@ -53,20 +52,17 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 		{
 			//std::cout << "Child node..." << std::endl;
 
-			// If child already expanded
-			for (int i = 0; i < closedList.size(); i++)
-			{
-				if (StateStruct::compare(closedList[i]->getState(), child->getState()))
-				{
-					std::cout << "Already expanded" << std::endl;
-					continue;
-				}
-			}
+			//// If child already expanded
+			//for (int i = 0; i < closedList.size(); i++)
+			//{
+			//	if (StateStruct::compare(closedList[i]->getState(), child->getState()))
+			//	{
+			//		//std::cout << "Already expanded" << std::endl;
+			//		continue;
+			//	}
+			//}
 
-			/*if (std::find(closedList.begin(), closedList.end(), child) != closedList.end()) 
-			{
-				continue;
-			}*/
+			// If child already expanded, skip to next child
 			bool isInClosed = false;
 			for (int i = 0; i < closedList.size(); i++)
 			{
@@ -90,7 +86,7 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 
 			if (!foundInstance)
 			{
-				std::cout << "Added to openList" << std::endl;
+				//std::cout << "Added to openList" << std::endl;
 				openSet.insert(child);
 				openList.push(child);
 			}
@@ -100,14 +96,13 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 			if (current->pathCost >= child->pathCost)
 				continue;
 
-			cameFrom.push_back(child);
 			child->pathCost;
 			//child->heuristicCost = child->pathCost + child->heuristic();
 
 		}
 	}
 
-	return cameFrom;
+	return std::vector<Node*>();
 }
 
 std::vector<Node*> Solver::reconstructPath(Node * finalChild)

@@ -21,6 +21,8 @@ public:
 	// totalCost = pathCost + heuristicCost
 	int totalCost;
 
+	void reconstructPath(std::vector<Node*> &cameFrom);
+
 	void clear();
 
 	const StateStruct::State& getState() { return mState; };

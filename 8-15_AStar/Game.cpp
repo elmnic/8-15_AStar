@@ -62,10 +62,11 @@ void Game::run()
 				
 				if (event.key.code == sf::Keyboard::Space)
 				{
+					std::cout << "Solving..." << std::endl;
 					std::vector<Node*> cameFrom;
 					solver->clear();
 					cameFrom = solver->solve(map.getCurrentState(), map.getGoalState());
-					std::cout << "CameFrom: " << cameFrom.size() << std::endl;
+					std::cout << "Solution requires: " << cameFrom.size() - 1 << " steps\n\n";
 					for each (Node* node in cameFrom)
 					{
 						map.printMap(node->getState());

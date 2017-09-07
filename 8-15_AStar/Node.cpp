@@ -25,7 +25,7 @@ void Node::expandChildren()
 	{
 
 		// Create new state by making a move in a direction
-		std::cout << "Move to be made: " << static_cast<Map::direction>(i) << std::endl;
+		//std::cout << "Move to be made: " << static_cast<Map::direction>(i) << std::endl;
 		StateStruct::State newState = map.move(static_cast<Map::direction>(i), mState);
 
 		// If parent exists and newState is the same as the parent's state, then skip
@@ -33,20 +33,20 @@ void Node::expandChildren()
 		{
 			if (StateStruct::compare(newState, mParent->getState()))
 			{
-				std::cout << "Nope" << std::endl;
+				//std::cout << "New state is parent. Skip" << std::endl;
 				continue;
 			}
 		}
 		
-		std::cout << "New State: \n";
-		Map::printMap(newState);
+		//std::cout << "New State: \n";
+		//Map::printMap(newState);
 
 		// If the move is valid, add it to the child nodes
 		if (newState != StateStruct::State(NULL))
 		{
-			std::cout << "Added child to neighbours" << std::endl;
+			//std::cout << "Added child to neighbours" << std::endl;
 			mChildren.push_back(new Node(newState, this, pathCost + 1));
-			std::cout << "Child cost: " << mChildren.back()->pathCost + mChildren.back()->heuristicCost << std::endl;
+			//std::cout << "Child cost: " << mChildren.back()->pathCost + mChildren.back()->heuristicCost << std::endl;
 		}
 	}
 
@@ -92,6 +92,17 @@ int Node::heuristic()
 	}
 
 	return totalCost;
+}
+
+void Node::reconstructPath(std::vector<Node*>& cameFrom)
+{
+	// Add the parent's state as long as there exist a parent. 
+	if (mParent != NULL) {
+		mParent->reconstructPath(cameFrom);
+	}
+
+	// If parent doesn't exist, add this. Will be the final element in the vector
+	cameFrom.push_back(this);
 }
 
 void Node::clear()
