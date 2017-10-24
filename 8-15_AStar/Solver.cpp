@@ -29,6 +29,9 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 	while (!openList.empty()) 
 	{
 		iterations++;
+		if (iterations % 1000 == 0)
+			std::cout << iterations << " iterations..." << std::endl;
+
 		Node *current = openList.top();
 		if (current->getState() == goal) 
 		{
@@ -36,8 +39,6 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 			current->reconstructPath(cameFrom);
 			return cameFrom;
 		}
-
-		//std::cout << "openList top: " << current->totalCost << std::endl;
 
 		// Create child nodes
 		current->expandChildren();
@@ -50,18 +51,6 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 
 		for each (Node* child in current->getChildren())
 		{
-			//std::cout << "Child node..." << std::endl;
-
-			//// If child already expanded
-			//for (int i = 0; i < closedList.size(); i++)
-			//{
-			//	if (StateStruct::compare(closedList[i]->getState(), child->getState()))
-			//	{
-			//		//std::cout << "Already expanded" << std::endl;
-			//		continue;
-			//	}
-			//}
-
 			// If child already expanded, skip to next child
 			bool isInClosed = false;
 			for (int i = 0; i < closedList.size(); i++)
@@ -91,14 +80,9 @@ std::vector<Node*> Solver::solve(StateStruct::State start, StateStruct::State go
 				openList.push(child);
 			}
 
-
 			// If childs path cost is lower, then that path is better
 			if (current->pathCost >= child->pathCost)
 				continue;
-
-			child->pathCost;
-			//child->heuristicCost = child->pathCost + child->heuristic();
-
 		}
 	}
 

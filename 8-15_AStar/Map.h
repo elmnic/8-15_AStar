@@ -30,7 +30,6 @@ public:
 
 
 private:
-	int correctPercentage();
 
 	bool mShuffling = false;
 

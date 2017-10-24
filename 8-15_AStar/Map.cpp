@@ -49,48 +49,10 @@ StateStruct::State Map::getCurrentState()
 {
 	return mCurrentState;
 }
-
 void Map::updateCurrentState(StateStruct::State newState)
 {
 	if (newState != StateStruct::State(NULL))
 		mCurrentState = newState;
-}
-
-// Usch
-int Map::correctPercentage()
-{
-	int correctTiles = 0;
-
-	if (mCurrentState.size() == 3)
-	{
-		for (int row = 0; row < mCurrentState.size(); row++)
-		{
-			for (int col = 0; col < mCurrentState[0].size(); col++)
-			{
-				if (mCurrentState[row][col] == mField3x3[row][col])
-				{
-					correctTiles++;
-				}
-			}
-		}
-	}
-	else if (mCurrentState.size() == 4)
-	{
-		for (int row = 0; row < mCurrentState.size(); row++)
-		{
-			for (int col = 0; col < mCurrentState[0].size(); col++)
-			{
-				if (mCurrentState[row][col] == mField4x4[row][col])
-				{
-					correctTiles++;
-				}
-			}
-		}
-	}
-
-	int percentage = (double)correctTiles / (double)(mCurrentState.size() * mCurrentState.size()) * 100;
-	std::cout << percentage << "% correct" << std::endl;
-	return percentage;
 }
 
 void Map::printMap(StateStruct::State map)
